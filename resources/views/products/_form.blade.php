@@ -36,4 +36,27 @@
 <label>Deskripsi</label>
 <textarea name="description" class="form-control">{{ old('description',$product->description ?? '') }}</textarea>
 </div>
+<div class="col-12">
+<label for="image" class="form-label">Gambar produk{{ isset($product) ? ' (opsional)' : '' }}</label>
+<input type="file" id="image" name="image" class="form-control" accept=".jpg,.jpeg,.png,.webp" {{ isset($product) ? '' : 'required' }}>
+<small class="form-text text-muted">Format JPG, PNG, atau WEBP. Maksimal 5 MB.</small>
+@error('image')<small class="d-block text-danger">{{ $message }}</small>@enderror
+<div class="mt-3">
+    <img id="image-preview"
+         src="{{ isset($product) && $product->image ? \Illuminate\Support\Facades\Storage::disk('public')->url($product->image) : asset('img/product-placeholder.svg') }}"
+         alt="Preview gambar produk"
+         style="width: 160px; height: 120px; object-fit: cover; border-radius: 8px;">
 </div>
+</div>
+</div>
+
+@push('scripts')
+<script>
+    document.getElementById('image').addEventListener('change', function (event) {
+        const file = event.target.files[0];
+        if (file) {
+            document.getElementById('image-preview').src = URL.createObjectURL(file);
+        }
+    });
+</script>
+@endpush

@@ -15,7 +15,7 @@ class DashboardController extends Controller
  $totalProducts = Product::count();
  $totalCategories = Category::count();
  $totalStock = (int) Product::sum('stock');
- $lowStockProducts = Product::where('stock','<=',5)->count();
+ $lowStockProducts = Product::where('stock','<=',Product::LOW_STOCK_THRESHOLD)->count();
  $inventoryValue = (float) Product::selectRaw(
  'COALESCE(SUM(price * stock), 0) as total'
  )->value('total');
@@ -29,7 +29,7 @@ class DashboardController extends Controller
  ->groupBy('categories.id','categories.name')
  ->orderBy('categories.name')->get();
  $stockStatus = [
- Product::where('stock','<=',5)->count(),
+ Product::where('stock','<=',Product::LOW_STOCK_THRESHOLD)->count(),
  Product::whereBetween('stock',[6,20])->count(),
  Product::where('stock','>',20)->count(),
  ];

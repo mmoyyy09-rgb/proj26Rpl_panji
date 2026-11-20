@@ -2,14 +2,39 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Category;
 use App\Models\Product;
-
+use App\Models\User;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 class DatabaseSeeder extends Seeder
 {
+    use WithoutModelEvents;
+
     public function run(): void
     {
+
+
+        User::updateOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Admin',
+                'password' => Hash::make('admin123'),
+                'role' => 'admin'
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'user@example.com'],
+            [
+                'name' => 'User Biasa',
+                'password' => Hash::make('user123'),
+                'role' => 'user'
+            ]
+        );
+
+
         $categoriesData = [
             ['name' => 'Aksesoris Gadget', 'description' => 'Powerbank, kabel charger, adaptor, dan casing.', 'status' => 'Aktif'],
             ['name' => 'Audio & Speaker', 'description' => 'Headset, TWS, earphone, dan bluetooth speaker.', 'status' => 'Aktif'],
@@ -64,7 +89,6 @@ class DatabaseSeeder extends Seeder
                         $globalStocks[$idx] = $stock;
                         $catCurrentStock += $stock;
                     } else {
-                        ak:
                         $remainingItemsInCat = $count - $i;
                         $remainingTargetStock = $catTargetStock - $catCurrentStock;
                         
@@ -99,15 +123,20 @@ class DatabaseSeeder extends Seeder
         // Masukkan data ke database
         $globalIndex = 0;
         foreach ($categoriesData as $index => $catData) {
-            $category = Category::create($catData);
+            $category = Category::updateOrCreate(
+                ['name' => $catData['name']],
+                $catData
+            );
             $countForThisCategory = $productCounts[$index];
 
             for ($i = 1; $i <= $countForThisCategory; $i++) {
                 $stockValue = $globalStocks[$globalIndex];
+                $productCode = 'PRD-' . str_pad($globalIndex + 1, 4, '0', STR_PAD_LEFT);
 
-                Product::create([
+                Product::updateOrCreate([
+                    'product_code' => $productCode,
+                ], [
                     'category_id' => $category->id,
-                    'product_code' => 'PRD-' . str_pad($globalIndex + 1, 4, '0', STR_PAD_LEFT),
                     'name' => $category->name . ' Series ' . $i,
                     'brand' => 'Brand ' . rand(1, 12),
                     'price' => rand(250, 15000) * 1000,

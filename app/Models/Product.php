@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo; // Perbaikan dari Factorie
 
 class Product extends Model
 {
+    public const LOW_STOCK_THRESHOLD = 5;
+
     protected $fillable = [
         'name',
         'category_id',
@@ -14,7 +16,8 @@ class Product extends Model
         'brand',        // Ditambahkan
         'price',
         'stock',
-        'description',  // Ditambahkan
+        'description', 
+        'image',        // Ditambahkan
     ];
 
     public function category(): BelongsTo

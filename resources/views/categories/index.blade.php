@@ -3,7 +3,9 @@
 @section('content')
 <div class="d-flex justify-content-between mb-3">
  <h3>Kategori Produk</h3>
- <a class="btn btn-primary" href="{{ route('categories.create') }}">Tambah Kategori</a>
+ @if(auth()->user()->role === 'admin')
+     <a class="btn btn-primary" href="{{ route('categories.create') }}">Tambah Kategori</a>
+ @endif
 </div>
 <div class="card"><div class="card-body">
 <table class="table">
@@ -28,11 +30,15 @@
     </td>
     <td>{{ $category->products_count }}</td>
     <td>
-    <a class="btn btn-sm btn-warning" href="{{ route('categories.edit',$category) }}">Edit</a>
-    <form class="d-inline" method="POST" action="{{ route('categories.destroy',$category) }}">
-    @csrf @method('DELETE')
-    <button class="btn btn-sm btn-danger" onclick="return confirm('Hapus kategori?')">Hapus</button>
-    </form>
+    @if(auth()->user()->role === 'admin')
+        <a class="btn btn-sm btn-warning" href="{{ route('categories.edit',$category) }}">Edit</a>
+        <form class="d-inline" method="POST" action="{{ route('categories.destroy',$category) }}">
+        @csrf @method('DELETE')
+        <button class="btn btn-sm btn-danger" onclick="return confirm('Hapus kategori?')">Hapus</button>
+        </form>
+    @else
+        <span class="text-muted small">Hanya Lihat</span>
+    @endif
     </td>
 </tr>
 @empty
